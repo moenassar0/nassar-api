@@ -34,6 +34,16 @@ class CamelDatabase{
         return $this;
     }
 
+    public function where(string $column, string $operator, string $value){
+        $this->sql .= " WHERE " . $column . " " . $operator . " " . $value;
+        return $this;
+    }
+
+    public function orderBy(string $column){
+        $this->sql .= " ORDER BY " . $column;
+        return $this;
+    }
+
     public function execute(){
         return $this->sql;
     }

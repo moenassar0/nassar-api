@@ -10,6 +10,8 @@ class UserController{
             $db
                 ->select(array("id", "firstName"))
                 ->from("users")
+                ->where("id", "=", "0")
+                ->orderBy('id')
                 ->execute()
         );
     }
