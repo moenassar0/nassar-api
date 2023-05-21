@@ -5,6 +5,12 @@ use App\Heart\CamelDatabase;
 
 class UserController{
     public function getUsers(){
-        return "gg";
+        $db = new CamelDatabase();
+        print_r(
+            $db
+                ->select(array("id", "firstName"))
+                ->from("users")
+                ->execute()
+        );
     }
 }
