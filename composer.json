@@ -1,0 +1,14 @@
+{
+    "name": "mnass/nassar-api",
+    "autoload": {
+        "psr-4": {
+            "App\\": "./"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mohamad Nassar"
+        }
+    ],
+    "require": {}
+}
