@@ -19,6 +19,7 @@ class CamelDatabase{
         $this->query->where = '';
         $this->query->orderBy = '';
         $this->query->whereIn = '';
+        $this->query->join = '';
     }
 
     public function select(...$columns){
@@ -32,8 +33,11 @@ class CamelDatabase{
         return $this;
     }
 
-    public function orderBy(string $column){
-        $this->query->orderBy = $column;
+    public function orderBy(string $column, string $orderType = "ASC"){
+        if($orderType !== "ASC" && $orderType !== "DESC"){
+            die("Bad order type");
+        }
+        $this->query->orderBy = "$column $orderType";
         return $this;
     }
 
@@ -42,14 +46,30 @@ class CamelDatabase{
         return $this;
     }
 
+    public function join(string $joinedTable, string $mainTableColumn, string $operator, string $joinedTableColumn){
+        $this->query->join = "$joinedTable ON $mainTableColumn $operator $joinedTableColumn";
+        return $this;
+    }
+
+    
+
     public function execute(){
         $sqlFunction = $this->query->sqlFunction;
         $outputQuery = "";
         if($sqlFunction === "SELECT"){
             $outputQuery .= "SELECT {$this->query->select} FROM {$this->query->from}";
 
-            if (!empty($this->query->where)) {
+            if(!empty($this->query->join)){
+                $outputQuery .= " JOIN {$this->query->join}";
+            }
+
+            if(!empty($this->query->where)){
                 $outputQuery .= " WHERE {$this->query->where}";
+            }
+
+
+            if(!empty($this->query->orderBy)){
+                $outputQuery .= " ORDER BY {$this->query->orderBy}";
             }
 
             return $outputQuery;
