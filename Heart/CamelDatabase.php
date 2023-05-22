@@ -2,7 +2,7 @@
 
 namespace App\Heart;
 use \stdClass;
-
+use \mysqli;
 class CamelDatabase{
 
     private $operation;
@@ -20,6 +20,20 @@ class CamelDatabase{
         $this->query->orderBy = '';
         $this->query->whereIn = '';
         $this->query->join = '';
+    }
+
+    public function connection(){
+        $servername = $_ENV['DB_SERVERNAME'];
+        $username = $_ENV['DB_USERNAME'];
+        $password = $_ENV['DB_PASSWORD'];
+        $dbname = $_ENV['DB_NAME'];
+    
+        // Create connection
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+        return $conn;
     }
 
     public function select(...$columns){
@@ -88,9 +102,15 @@ class CamelDatabase{
             if(!empty($this->query->orderBy)){
                 $outputQuery .= " ORDER BY {$this->query->orderBy}";
             }
-
-            return $outputQuery;
+            
+            if($executeSQL) $this->executeQuery($outputQuery, $sqlFunction);
         }
+    }
+
+    public function executeQuery($query, $sqlFunction){
+        $conn = $this->connection();
+        $response = [];
+        $stmt = $conn->prepare($query);
     }
 
     // public function select(array $columns){
