@@ -77,6 +77,12 @@ class CamelDatabase{
         return $this;
     }
 
+    public function belongsTo($mainTable, $belongedTable, $specificID = false){
+        if(!$specificID){
+            return $this->select()->from("users")->getSQL();
+        }
+    }
+
     public function getSQL(){
         return $this->execute(false);
     }
@@ -103,7 +109,8 @@ class CamelDatabase{
                 $outputQuery .= " ORDER BY {$this->query->orderBy}";
             }
             
-            if($executeSQL) $this->executeQuery($outputQuery, $sqlFunction);
+            if($executeSQL) return $this->executeQuery($outputQuery, $sqlFunction);
+            else return $outputQuery;
         }
     }
 
@@ -116,9 +123,7 @@ class CamelDatabase{
         if(!$stmt || !$stmt->execute()){
           $response['success'] = "false";
           $response['error'] = $conn->error;
-          $json = json_encode($response);
-          echo $json;
-          return;
+          return $response;
         }
 
         if($sqlFunction === "SELECT"){
@@ -128,51 +133,7 @@ class CamelDatabase{
                 array_push($response['items'], $a);
             }
         }
-        
-        $json = json_encode($response);
-        echo $json;
+
+        return $response;
     }
-
-    // public function select(array $columns){
-    //     $this->sql .= "SELECT ";
-    //     for($x = 0; $x < count($columns); $x++){
-    //         if($x === (count($columns) - 1)){
-    //             $this->sql .= $columns[$x] . " ";
-    //         }
-    //         else{
-    //             $this->sql .= $columns[$x] . ", ";
-    //         }
-    //     } 
-    //     return $this;
-    // }
-
-    // public function from($table){
-    //     $this->sql .= " FROM " . $table; 
-    //     return $this;
-    // }
-
-    // public function where(string $column, string $operator, string $value){
-    //     $this->sql .= " WHERE " . $column . " " . $operator . " " . $value;
-    //     return $this;
-    // }
-
-    // public function orderBy(string $column){
-    //     $this->sql .= " ORDER BY " . $column;
-    //     return $this;
-    // }
-
-    // public function join(string $joinedTable, string $mainTableColumn, string $operator, string $joinedTableColumn){
-    //     $this->sql .= " JOIN " . $joinedTable . " ON " . $mainTableColumn . " " . $operator . " " . $joinedTableColumn;
-    //     return $this;
-    // }
-
-    // public function whereIn($column, $subquery)
-    // {
-    //     $this->query->whereIn = "$column IN ($subquery)";
-    //     return $this;
-    // }
-
-    // public function execute(){
-    //     return $this->sql;
-    // }
 }
