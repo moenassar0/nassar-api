@@ -20,6 +20,7 @@ class CamelDatabase{
         $this->query->orderBy = '';
         $this->query->whereIn = '';
         $this->query->join = '';
+        $this->query->bindings = [];
     }
 
     public function reset(){
@@ -31,6 +32,7 @@ class CamelDatabase{
         $this->query->orderBy = '';
         $this->query->whereIn = '';
         $this->query->join = '';
+        $this->query->bindings = [];
     }
 
     public function connection(){
@@ -67,22 +69,20 @@ class CamelDatabase{
     }
 
     public function where(string $column, string $operator, string $value){
-        $this->query->where = "$column $operator '$value'";
-        return $this;
-    }
-
-    public function join(string $joinedTable, string $mainTableColumn, string $operator, string $joinedTableColumn){
-        $this->query->join = "$joinedTable ON $mainTableColumn $operator $joinedTableColumn";
+        $this->query->where = "$column $operator ?";
+        array_push($this->query->bindings, $value);
         return $this;
     }
 
     public function orWhere(string $column, string $operator, string $value){
-        $this->query->where .= " OR $column $operator '$value'";
+        $this->query->where .= " OR $column $operator ?";
+        array_push($this->query->bindings, $value);
         return $this;
     }
 
     public function andWhere(string $column, string $operator, string $value){
-        $this->query->where .= " AND $column $operator '$value'";
+        $this->query->where .= " AND $column $operator ?";
+        array_push($this->query->bindings, $value);
         return $this;
     }
 
@@ -90,6 +90,11 @@ class CamelDatabase{
     {
         $subquery = $subquery->getSQL();
         $this->query->whereIn = "$column IN ($subquery)";
+        return $this;
+    }
+
+    public function join(string $joinedTable, string $mainTableColumn, string $operator, string $joinedTableColumn){
+        $this->query->join = "$joinedTable ON $mainTableColumn $operator $joinedTableColumn";
         return $this;
     }
 
@@ -153,7 +158,7 @@ class CamelDatabase{
         $stmt = $conn->prepare($query);
         
         //Error handling
-        if(!$stmt || !$stmt->execute()){
+        if(!$stmt || !$stmt->execute($this->query->bindings)){
           $response['success'] = "false";
           $response['error'] = $conn->error;
           return $response;
