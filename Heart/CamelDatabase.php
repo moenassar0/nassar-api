@@ -51,7 +51,10 @@ class CamelDatabase{
         return $this;
     }
 
-    
+    public function orWhere(string $column, string $operator, string $value){
+        $this->query->where .= " OR $column $operator '$value'";
+        return $this;
+    }
 
     public function execute(){
         $sqlFunction = $this->query->sqlFunction;
