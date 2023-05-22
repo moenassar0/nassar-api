@@ -77,10 +77,22 @@ class CamelDatabase{
         return $this;
     }
 
-    public function belongsTo($mainTable, $belongedTable, $specificID = false){
-        if(!$specificID){
-            return $this->select()->from("users")->getSQL();
+    public function belongsTo($mainTable, $belongedTable, $foreignKey){
+        $mainTableItems = $this->select("*")->from($mainTable)->execute();
+        $mainTableItems = $mainTableItems["items"];
+        $belongedTableItems = $this->select("*")->from($belongedTable)->execute();
+        $belongedTableItems = $belongedTableItems["items"];
+
+        for($x = 0; $x < count($mainTableItems); $x++){
+            if(!isset($mainTableItems[$x][$belongedTable])) $mainTableItems[$x][$belongedTable] = array();
+            for($y = 0; $y < count($belongedTableItems); $y++){
+                if($belongedTableItems[$y][$foreignKey] === $mainTableItems[$x]['id']){
+                    array_push($mainTableItems[$x][$belongedTable], $belongedTableItems[$y]);
+                }
+            }
         }
+        
+        return $mainTableItems;
     }
 
     public function getSQL(){
