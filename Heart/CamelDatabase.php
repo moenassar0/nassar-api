@@ -56,7 +56,18 @@ class CamelDatabase{
         return $this;
     }
 
-    public function execute(){
+    public function whereIn($column, $subquery)
+    {
+        $subquery = $subquery->getSQL();
+        $this->query->whereIn = "$column IN ($subquery)";
+        return $this;
+    }
+
+    public function getSQL(){
+        return $this->execute(false);
+    }
+
+    public function execute($executeSQL = true){
         $sqlFunction = $this->query->sqlFunction;
         $outputQuery = "";
         if($sqlFunction === "SELECT"){
@@ -70,6 +81,9 @@ class CamelDatabase{
                 $outputQuery .= " WHERE {$this->query->where}";
             }
 
+            if (!empty($this->query->whereIn)) {
+                $outputQuery .= " WHERE {$this->query->whereIn}";
+            }
 
             if(!empty($this->query->orderBy)){
                 $outputQuery .= " ORDER BY {$this->query->orderBy}";
