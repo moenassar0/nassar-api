@@ -22,6 +22,17 @@ class CamelDatabase{
         $this->query->join = '';
     }
 
+    public function reset(){
+        $this->query = new stdClass();
+        $this->query->sqlFunction = '';
+        $this->query->select = '*';
+        $this->query->from = '';
+        $this->query->where = '';
+        $this->query->orderBy = '';
+        $this->query->whereIn = '';
+        $this->query->join = '';
+    }
+
     public function connection(){
         $servername = $_ENV['DB_SERVERNAME'];
         $username = $_ENV['DB_USERNAME'];
@@ -77,12 +88,18 @@ class CamelDatabase{
         return $this;
     }
 
-    public function belongsTo($mainTable, $belongedTable, $foreignKey){
-        $mainTableItems = $this->select("*")->from($mainTable)->execute();
+    public function belongsTo($mainTable, $belongedTable, $foreignKey, $specificID = false){
+        if(!$specificID){
+            $mainTableItems = $this->select("*")->from($mainTable)->execute();
+        }
+        else{
+            $mainTableItems = $this->select("*")->from($mainTable)->where("id", "=", $specificID)->execute();
+        }
+        $this->reset();
         $mainTableItems = $mainTableItems["items"];
         $belongedTableItems = $this->select("*")->from($belongedTable)->execute();
         $belongedTableItems = $belongedTableItems["items"];
-
+        
         for($x = 0; $x < count($mainTableItems); $x++){
             if(!isset($mainTableItems[$x][$belongedTable])) $mainTableItems[$x][$belongedTable] = array();
             for($y = 0; $y < count($belongedTableItems); $y++){
@@ -91,7 +108,6 @@ class CamelDatabase{
                 }
             }
         }
-        
         return $mainTableItems;
     }
 
