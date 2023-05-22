@@ -81,6 +81,11 @@ class CamelDatabase{
         return $this;
     }
 
+    public function andWhere(string $column, string $operator, string $value){
+        $this->query->where .= " AND $column $operator '$value'";
+        return $this;
+    }
+
     public function whereIn($column, $subquery)
     {
         $subquery = $subquery->getSQL();
