@@ -111,6 +111,26 @@ class CamelDatabase{
         $conn = $this->connection();
         $response = [];
         $stmt = $conn->prepare($query);
+        
+        //Error handling
+        if(!$stmt || !$stmt->execute()){
+          $response['success'] = "false";
+          $response['error'] = $conn->error;
+          $json = json_encode($response);
+          echo $json;
+          return;
+        }
+
+        if($sqlFunction === "SELECT"){
+            $result = $stmt->get_result();
+            $response['items'] = array();
+            while($a = $result->fetch_assoc()){
+                array_push($response['items'], $a);
+            }
+        }
+        
+        $json = json_encode($response);
+        echo $json;
     }
 
     // public function select(array $columns){
