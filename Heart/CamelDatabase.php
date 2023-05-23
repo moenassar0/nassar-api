@@ -3,6 +3,7 @@
 namespace App\Heart;
 use \stdClass;
 use \mysqli;
+use \PDO;
 class CamelDatabase{
 
     private $operation;
@@ -185,5 +186,18 @@ class CamelDatabase{
         }
         
         return $response;
+    }
+
+    /* Custom functions that may be helpful */
+    public function returnTableFields(string $table){
+        $conn = $this->connection();
+        $q = $conn->prepare("DESCRIBE ". $table);
+        $q->execute();
+        $result = $q->get_result();
+        $fieldNames = [];
+        while($a = $result->fetch_assoc()){
+            array_push($fieldNames, $a['Field']);
+        }
+        return $fieldNames;
     }
 }
