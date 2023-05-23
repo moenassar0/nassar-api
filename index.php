@@ -22,5 +22,8 @@ for($x = 0; $x < count($router->routes); $x++){
         $class = new $className();
         $functionName = $router->routes[$x]['function'];
         $result = $class->$functionName();
+        die;
     }
 }
+
+echo json_encode(array("success" => false, "error" => "Route not found!"));
