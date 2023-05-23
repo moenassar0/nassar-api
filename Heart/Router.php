@@ -8,8 +8,8 @@ class Router{
         $this->addRoute("GET", $path, $controller, $functionName);
     }
 
-    public function post(){
-        return 0;
+    public function post(string $path, string $controller, string $functionName){
+        $this->addRoute("POST", $path, $controller, $functionName);
     }
 
     public function addRoute(string $method, string $path, string $controller, string $functionName){
