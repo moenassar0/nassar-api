@@ -1,6 +1,9 @@
 <?php
 
 require_once __DIR__ . '/vendor/autoload.php';
+$envPath = './';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . $envPath);
+$dotenv->load();
 use App\Heart\Router;
 use App\Controllers\UserController;
 
