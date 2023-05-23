@@ -10,6 +10,7 @@ use App\Controllers\UserController;
 //Add routes
 $router = new Router();
 $router->get("/users", UserController::class, "getUsers");
+$router->post("/user", UserController::class, "postUser");
 
 //Find if route requested matches one of our routes
 $url = (parse_url($_SERVER['REQUEST_URI']));
@@ -21,6 +22,5 @@ for($x = 0; $x < count($router->routes); $x++){
         $class = new $className();
         $functionName = $router->routes[$x]['function'];
         $result = $class->$functionName();
-        echo $result;
     }
 }
