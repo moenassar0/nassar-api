@@ -107,14 +107,26 @@ class CamelDatabase{
         }
         $this->reset();
         $mainTableItems = $mainTableItems["items"];
+
+
+        
+
         $belongedTableItems = $this->select("*")->from($belongedTable)->execute();
         $belongedTableItems = $belongedTableItems["items"];
         
-        for($x = 0; $x < count($mainTableItems); $x++){
-            if(!isset($mainTableItems[$x][$belongedTable])) $mainTableItems[$x][$belongedTable] = array();
-            for($y = 0; $y < count($belongedTableItems); $y++){
-                if($belongedTableItems[$y][$foreignKey] === $mainTableItems[$x]['id']){
-                    array_push($mainTableItems[$x][$belongedTable], $belongedTableItems[$y]);
+        $mainTableCount = count($mainTableItems);
+        $belongedTableCount = count($belongedTableItems);
+        
+        for ($x = 0; $x < $mainTableCount; $x++) {
+            if (!isset($mainTableItems[$x][$belongedTable])) {
+                $mainTableItems[$x][$belongedTable] = array();
+            }
+        
+            $mainTableId = $mainTableItems[$x]['id'];
+            for ($y = 0; $y < $belongedTableCount; $y++) {
+                $belongedTableItem = $belongedTableItems[$y];
+                if ($belongedTableItem[$foreignKey] === $mainTableId) {
+                    $mainTableItems[$x][$belongedTable][] = $belongedTableItem;
                 }
             }
         }
@@ -159,11 +171,12 @@ class CamelDatabase{
         
         //Error handling
         if(!$stmt || !$stmt->execute($this->query->bindings)){
-          $response['success'] = "false";
+          $response['success'] = false;
           $response['error'] = $conn->error;
           return $response;
         }
-
+        
+        $response['success'] = true;
         if($sqlFunction === "SELECT"){
             $result = $stmt->get_result();
             $response['items'] = array();
@@ -171,7 +184,7 @@ class CamelDatabase{
                 array_push($response['items'], $a);
             }
         }
-
+        
         return $response;
     }
 }
