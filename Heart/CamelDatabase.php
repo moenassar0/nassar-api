@@ -107,27 +107,26 @@ class CamelDatabase{
         }
         $this->reset();
         $mainTableItems = $mainTableItems["items"];
-
-
-        
-
         $belongedTableItems = $this->select("*")->from($belongedTable)->execute();
         $belongedTableItems = $belongedTableItems["items"];
         
         $mainTableCount = count($mainTableItems);
         $belongedTableCount = count($belongedTableItems);
+
+        //Create lookup table
+        $mainTableItemsMap = array();
+        foreach ($mainTableItems as $mainTableItem) {
+            $mainTableItemsMap[$mainTableItem['id']] = $mainTableItem;
+        }
+
+        for($y = 0; $y < $mainTableCount; $y++){
+            $mainTableItems[$y][$belongedTable] = array();
+        }
         
-        for ($x = 0; $x < $mainTableCount; $x++) {
-            if (!isset($mainTableItems[$x][$belongedTable])) {
-                $mainTableItems[$x][$belongedTable] = array();
-            }
-        
-            $mainTableId = $mainTableItems[$x]['id'];
-            for ($y = 0; $y < $belongedTableCount; $y++) {
-                $belongedTableItem = $belongedTableItems[$y];
-                if ($belongedTableItem[$foreignKey] === $mainTableId) {
-                    $mainTableItems[$x][$belongedTable][] = $belongedTableItem;
-                }
+        for($x = 0; $x < $belongedTableCount; $x++){
+            $foreignUserID = $belongedTableItems[$x][$foreignKey];
+            if(isset($mainTableItemsMap[$foreignUserID])){
+                array_push($mainTableItems[$foreignUserID - 1][$belongedTable], $belongedTableItems[$x]);
             }
         }
         return $mainTableItems;
