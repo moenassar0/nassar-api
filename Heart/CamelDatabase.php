@@ -89,8 +89,9 @@ class CamelDatabase{
 
     public function whereIn($column, $subquery)
     {
-        $subquery = $subquery->getSQL();
-        $this->query->whereIn = "$column IN ($subquery)";
+        $sql = $subquery->getSQL();
+        $this->query->bindings = array_merge($this->query->bindings, $subquery->query->bindings);
+        $this->query->whereIn = "$column IN ($sql)";
         return $this;
     }
 
