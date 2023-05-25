@@ -189,6 +189,8 @@ class CamelDatabase{
         return $response;
     }
 
+
+
     /* Custom functions that may be helpful */
     public function returnTableFields(string $table){
         $conn = $this->connection();
@@ -201,4 +203,13 @@ class CamelDatabase{
         }
         return $fieldNames;
     }
+
+    function keysEqualValues($array1, $array2) {
+        $keys = array_keys($array1);
+        $values = array_values($array2);
+        sort($keys);
+        sort($values);
+        return $keys == $values;
+    }
+
 }
