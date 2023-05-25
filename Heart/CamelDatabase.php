@@ -214,6 +214,16 @@ class CamelDatabase{
         return $this->executeQuery($outputQuery, "INSERT");
     }
 
+    public function filterSearch($filterObject, $tableName){
+        $keys = array_keys($filterObject);
+        $values = array_values($filterObject);
+        $dbObject = $this->select("*")->from($tableName);
+        for($x = 0; $x < count($keys); $x++){
+            $dbObject->andWhere($keys[$x], "=", $values[$x]);
+        }
+        return $this->getSQL();
+    }
+
     /* Custom functions that may be helpful */
     public function returnTableFields(string $table){
         $conn = $this->connection();
