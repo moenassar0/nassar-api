@@ -196,7 +196,7 @@ class CamelDatabase{
             $this->deleteKey($item, "id");
             $this->deleteKey($tableFields, "id");
         }
-        return $this->keysEqualValues($item, $tableFields);
+        return $this->sameKeys($item, $tableFields);
     }
 
     /* Custom functions that may be helpful */
@@ -207,17 +207,19 @@ class CamelDatabase{
         $result = $q->get_result();
         $fieldNames = [];
         while($a = $result->fetch_assoc()){
-            array_push($fieldNames, $a['Field']);
+            // $pair = array($a['Field'] => "");
+            // array_push($fieldNames, $pair);
+            $fieldNames[$a['Field']] = "";
         }
         return $fieldNames;
     }
 
-    function keysEqualValues($array1, $array2) {
-        $keys = array_keys($array1);
-        $values = array_values($array2);
-        sort($keys);
-        sort($values);
-        return $keys == $values;
+    function sameKeys($array1, $array2) {
+        $keys1 = array_keys($array1);
+        $keys2 = array_keys($array2);
+        sort($keys1);
+        sort($keys2);
+        return $keys1 == $keys2;
     }
 
     function deleteKey(&$array, $key) {
