@@ -189,7 +189,15 @@ class CamelDatabase{
         return $response;
     }
 
-
+    /* Functions to help CRUD Operations */
+    public function insert($item, $tableName, $autoIncrement = true){
+        $tableFields = $this->returnTableFields($tableName);
+        if($autoIncrement){
+            $this->deleteKey($item, "id");
+            $this->deleteKey($tableFields, "id");
+        }
+        return $this->keysEqualValues($item, $tableFields);
+    }
 
     /* Custom functions that may be helpful */
     public function returnTableFields(string $table){
