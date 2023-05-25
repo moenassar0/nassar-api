@@ -176,7 +176,7 @@ class CamelDatabase{
           $response['error'] = $conn->error;
           return $response;
         }
-        
+
         $response['success'] = true;
         if($sqlFunction === "SELECT"){
             $result = $stmt->get_result();
@@ -185,7 +185,7 @@ class CamelDatabase{
                 array_push($response['items'], $a);
             }
         }
-        
+
         return $response;
     }
 
@@ -197,9 +197,14 @@ class CamelDatabase{
             $this->deleteKey($tableFields, "id");
         }
         $keys = implode(", ", array_keys($item));
-        $values = "'" . implode("', '", array_values($item)) . "'";
-        $sql = "INSERT INTO $tableName ($keys) VALUES ($values)";
-        return $sql;
+        $values = "";
+        for($x = 0; $x < count(array_keys($item)); $x++){
+            if($x < count(array_keys($item)) - 1) $values .= "?" . ", ";
+            else $values .= "?";
+        }
+        $outputQuery = "INSERT INTO $tableName ($keys) VALUES ($values)";
+        $this->query->bindings = array_values($item);
+        return $this->executeQuery($outputQuery, "INSERT");
     }
 
     /* Custom functions that may be helpful */
