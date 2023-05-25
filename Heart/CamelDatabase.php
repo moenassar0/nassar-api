@@ -82,6 +82,9 @@ class CamelDatabase{
     }
 
     public function andWhere(string $column, string $operator, string $value){
+        if(empty($this->query->where)){
+            $this->where($column, $operator, $value);
+        }
         $this->query->where .= " AND $column $operator ?";
         array_push($this->query->bindings, $value);
         return $this;
