@@ -3,6 +3,14 @@
 namespace App\Heart;
 class Router{
     public $routes = [];
+    private $currentMiddleware = null;
+
+    public function middleware($middleware, $callback)
+    {
+        $this->currentMiddleware = $middleware;
+        $callback($this);
+        $this->currentMiddleware = null;
+    }
 
     public function get(string $path, string $controller, string $functionName){
         $this->addRoute("GET", $path, $controller, $functionName);
@@ -17,7 +25,8 @@ class Router{
             "path" => $path,
             "method" => $method,
             "controller" => $controller,
-            "function" => $functionName
+            "function" => $functionName,
+            "middleware" => $this->currentMiddleware
         ));
     }
 
