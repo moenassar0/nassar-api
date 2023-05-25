@@ -176,16 +176,20 @@ class CamelDatabase{
           $response['error'] = $conn->error;
           return $response;
         }
-
-        $response['success'] = true;
+        
         if($sqlFunction === "SELECT"){
+            $response['success'] = true;
             $result = $stmt->get_result();
             $response['items'] = array();
             while($a = $result->fetch_assoc()){
                 array_push($response['items'], $a);
             }
         }
-
+        else if($sqlFunction === "INSERT"){
+            $response['success'] = true;
+            $response['message'] = "Successfully inserted data.";
+        }
+        
         return $response;
     }
 
