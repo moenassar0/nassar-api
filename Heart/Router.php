@@ -20,4 +20,21 @@ class Router{
             "function" => $functionName
         ));
     }
+
+    public function route(){
+        $url = (parse_url($_SERVER['REQUEST_URI']));
+        $url = $url['path'];
+        $method = $_SERVER['REQUEST_METHOD'];
+        for($x = 0; $x < count($this->routes); $x++){
+            if($this->routes[$x]['path'] === $url && $this->routes[$x]['method'] === $method){
+                $className = $this->routes[$x]['controller'];
+                $class = new $className();
+                $functionName = $this->routes[$x]['function'];
+                $result = $class->$functionName();
+                die;
+            }
+        }
+        echo json_encode(array("success" => false, "error" => "Route not found!"));
+        die;
+    }
 }
