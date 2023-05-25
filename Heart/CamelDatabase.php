@@ -212,4 +212,12 @@ class CamelDatabase{
         return $keys == $values;
     }
 
+    function deleteKey(&$array, $key) {
+        if (array_key_exists($key, $array)) {
+            unset($array[$key]);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
