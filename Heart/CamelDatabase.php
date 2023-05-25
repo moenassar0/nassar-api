@@ -196,7 +196,10 @@ class CamelDatabase{
             $this->deleteKey($item, "id");
             $this->deleteKey($tableFields, "id");
         }
-        return $this->sameKeys($item, $tableFields);
+        $keys = implode(", ", array_keys($item));
+        $values = "'" . implode("', '", array_values($item)) . "'";
+        $sql = "INSERT INTO $tableName ($keys) VALUES ($values)";
+        return $sql;
     }
 
     /* Custom functions that may be helpful */
