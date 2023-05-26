@@ -6,9 +6,6 @@ use \mysqli;
 use \PDO;
 class CamelDatabase{
 
-    private $operation;
-    private $table;
-    private $columns;
     private $query;
 
     public function __construct()
@@ -42,11 +39,8 @@ class CamelDatabase{
         $password = $_ENV['DB_PASSWORD'];
         $dbname = $_ENV['DB_NAME'];
     
-        // Create connection
         $conn = new mysqli($servername, $username, $password, $dbname);
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
+        if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
         return $conn;
     }
 
@@ -89,14 +83,6 @@ class CamelDatabase{
         array_push($this->query->bindings, $value);
         return $this;
     }
-
-    // public function whereIn($column, $subquery)
-    // {
-    //     $sql = $subquery->getSQL();
-    //     $this->query->bindings = array_merge($this->query->bindings, $subquery->query->bindings);
-    //     $this->query->whereIn = "$column IN ($sql)";
-    //     return $this;
-    // }
 
     public function whereIn($column, $callback)
     {
@@ -245,8 +231,6 @@ class CamelDatabase{
         $result = $q->get_result();
         $fieldNames = [];
         while($a = $result->fetch_assoc()){
-            // $pair = array($a['Field'] => "");
-            // array_push($fieldNames, $pair);
             $fieldNames[$a['Field']] = "";
         }
         return $fieldNames;
@@ -260,12 +244,11 @@ class CamelDatabase{
         return $keys1 == $keys2;
     }
 
-    function deleteKey(&$array, $key) {
-        if (array_key_exists($key, $array)) {
+    function deleteKey(&$array, $key){
+        if(array_key_exists($key, $array)){
             unset($array[$key]);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }
