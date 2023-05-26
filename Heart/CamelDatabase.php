@@ -101,6 +101,12 @@ class CamelDatabase{
         return $this;
     }
 
+    public function count($columnName){
+        if(!empty($this->query->select)) $this->query->select .= ", COUNT({$columnName})";
+        else $this->query->select .= "COUNT({$columnName})";
+        return $this;
+    }
+
     public function belongsTo($mainTable, $belongedTable, $foreignKey, $specificID = false){
         if(!$specificID){
             $mainTableItems = $this->select("*")->from($mainTable)->execute();
