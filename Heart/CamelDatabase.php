@@ -18,6 +18,8 @@ class CamelDatabase{
         $this->query->orderBy = '';
         $this->query->whereIn = '';
         $this->query->join = '';
+        $this->query->count = '';
+        $this->query->limit = '';
         $this->query->bindings = [];
     }
 
@@ -30,8 +32,24 @@ class CamelDatabase{
         $this->query->orderBy = '';
         $this->query->whereIn = '';
         $this->query->join = '';
+        $this->query->count = '';
+        $this->query->limit = '';
         $this->query->bindings = [];
     }
+
+    public function __clone() {
+        $this->query = clone $this->query;
+        $this->query->sqlFunction = $this->query->sqlFunction;
+        $this->query->select = $this->query->select;
+        $this->query->from = $this->query->from;
+        $this->query->where = $this->query->where;
+        $this->query->orderBy = $this->query->orderBy;
+        $this->query->whereIn = $this->query->whereIn;
+        $this->query->join = $this->query->join;
+        $this->query->count = $this->query->count;
+        $this->query->limit = $this->query->limit;
+        $this->query->bindings = $this->query->bindings;
+      }
 
     public function connection(){
         $servername = $_ENV['DB_SERVERNAME'];
@@ -101,9 +119,10 @@ class CamelDatabase{
         return $this;
     }
 
-    public function count($columnName){
-        if(!empty($this->query->select)) $this->query->select .= ", COUNT({$columnName})";
-        else $this->query->select .= "COUNT({$columnName})";
+    public function count($columnName, $renameTo = "instances"){
+        if(!empty($this->query->select)) $this->query->select .= ", COUNT({$columnName}) AS {$renameTo}";
+        else $this->query->select .= "COUNT({$columnName}) AS {$renameTo}";
+        $this->query->count = $renameTo;
         return $this;
     }
 
@@ -167,7 +186,13 @@ class CamelDatabase{
             if(!empty($this->query->orderBy)){
                 $outputQuery .= " ORDER BY {$this->query->orderBy}";
             }
-            
+
+            if(!empty($this->query->limit)){
+                $outputQuery .= " LIMIT {$this->query->limit}";
+            }
+
+            if((!empty($this->query->count))) $sqlFunction = "COUNT";
+
             if($executeSQL) return $this->executeQuery($outputQuery, $sqlFunction);
             else return $outputQuery;
         }
@@ -200,7 +225,7 @@ class CamelDatabase{
         else if($sqlFunction === "COUNT"){
             $response['success'] = true;
             $result = $stmt->get_result()->fetch_assoc();
-            $response['totalItems'] = $result['totalItems'];
+            $response[$this->query->count] = $result[$this->query->count];
         }
         
         return $response;
