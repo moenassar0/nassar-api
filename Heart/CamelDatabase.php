@@ -287,4 +287,10 @@ class CamelDatabase{
         }
         return false;
     }
+
+    function roundUp($number) {
+        $decimalPlaces = $number - floor($number);
+        if($decimalPlaces > 0) $number = ceil($number);
+        return $number;
+      }
 }
