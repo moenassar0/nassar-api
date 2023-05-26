@@ -191,6 +191,11 @@ class CamelDatabase{
             $response['success'] = true;
             $response['message'] = "Successfully inserted data.";
         }
+        else if($sqlFunction === "COUNT"){
+            $response['success'] = true;
+            $result = $stmt->get_result()->fetch_assoc();
+            $response['totalItems'] = $result['totalItems'];
+        }
         
         return $response;
     }
