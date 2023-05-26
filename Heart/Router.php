@@ -36,6 +36,9 @@ class Router{
         $method = $_SERVER['REQUEST_METHOD'];
         for($x = 0; $x < count($this->routes); $x++){
             if($this->routes[$x]['path'] === $url && $this->routes[$x]['method'] === $method){
+                if($this->routes[$x]['middleware']){
+                    Middleware::resolve($this->routes[$x]['middleware']);
+                }
                 $className = $this->routes[$x]['controller'];
                 $class = new $className();
                 $functionName = $this->routes[$x]['function'];
