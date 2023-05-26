@@ -90,11 +90,23 @@ class CamelDatabase{
         return $this;
     }
 
-    public function whereIn($column, $subquery)
+    // public function whereIn($column, $subquery)
+    // {
+    //     $sql = $subquery->getSQL();
+    //     $this->query->bindings = array_merge($this->query->bindings, $subquery->query->bindings);
+    //     $this->query->whereIn = "$column IN ($sql)";
+    //     return $this;
+    // }
+
+    public function whereIn($column, $callback)
     {
-        $sql = $subquery->getSQL();
-        $this->query->bindings = array_merge($this->query->bindings, $subquery->query->bindings);
-        $this->query->whereIn = "$column IN ($sql)";
+        $subQueryBuilder = new CamelDatabase();
+        $callback($subQueryBuilder);
+
+        $subQuery = '(' . $subQueryBuilder->getSQL() . ')';
+        echo $subQuery . "\n";
+        $this->query->whereIn = "$column IN $subQuery";
+        $this->query->bindings = array_merge($this->query->bindings, $subQueryBuilder->query->bindings);
         return $this;
     }
 
@@ -155,8 +167,9 @@ class CamelDatabase{
                 $outputQuery .= " WHERE {$this->query->where}";
             }
 
-            if (!empty($this->query->whereIn)) {
-                $outputQuery .= " WHERE {$this->query->whereIn}";
+            if (!empty($this->query->whereIn)){
+                if(!empty($this->query->where)) $outputQuery .= " AND {$this->query->whereIn}";
+                else $outputQuery .= " WHERE {$this->query->whereIn}";
             }
 
             if(!empty($this->query->orderBy)){
@@ -221,7 +234,7 @@ class CamelDatabase{
         for($x = 0; $x < count($keys); $x++){
             $dbObject->andWhere($keys[$x], "=", $values[$x]);
         }
-        return $this->getSQL();
+        return $this->execute();
     }
 
     /* Custom functions that may be helpful */
