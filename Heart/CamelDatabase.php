@@ -259,6 +259,20 @@ class CamelDatabase{
         return $this->execute();
     }
 
+    public function paginate(int $dataPerPage, int $currentPage){
+        $totalItems = clone $this;
+        $totalItems = ($totalItems->count("id")->execute()[$totalItems->query->count]);
+
+        $maxPages = $this->roundUp($totalItems/$dataPerPage);
+        if($currentPage > $maxPages){ $currentPage = $maxPages; }
+        $lowerLimit = ($currentPage - 1) * $dataPerPage;
+        $upperLimit = ($currentPage) * $dataPerPage;
+        if($upperLimit > $totalItems) $upperLimit = $totalItems;
+        if($lowerLimit > $upperLimit) $lowerLimit = $upperLimit - $dataPerPage;
+        $this->query->limit = "{$lowerLimit}, {$upperLimit}";
+        return $this;
+    }
+
     /* Custom functions that may be helpful */
     public function returnTableFields(string $table){
         $conn = $this->connection();
@@ -292,5 +306,5 @@ class CamelDatabase{
         $decimalPlaces = $number - floor($number);
         if($decimalPlaces > 0) $number = ceil($number);
         return $number;
-      }
+    }
 }
