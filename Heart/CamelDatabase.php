@@ -220,18 +220,16 @@ class CamelDatabase{
                 array_push($response['items'], $a);
             }
         }
-        else if($sqlFunction === "INSERT"){
-            $response['success'] = true;
-            $response['message'] = "Successfully inserted data.";
-        }
-        else if($sqlFunction === "UPDATE"){
+        else if($sqlFunction === "UPDATE" || $sqlFunction === "INSERT"){
+            $word = ($sqlFunction === "UPDATE") ? "updated" : "inserted";
+            $wordPresent = ($sqlFunction === "UPDATE") ? "update" : "insert";
             if($affectedRows > 0){
                 $response['success'] = true;
-                $response['message'] = "Successfully updated $affectedRows row(s) of data.";
+                $response['message'] = "Successfully $word $affectedRows row(s) of data.";
             }
             else{
                 $response['success'] = false;
-                $response['message'] = "Failed to update data.";
+                $response['message'] = "Failed to $wordPresent data.";
             }
         }
         else if($sqlFunction === "COUNT"){
@@ -271,7 +269,7 @@ class CamelDatabase{
                 $values .= "{$keys[$x]} = ?, ";
                 else $values .= "{$keys[$x]} = ? WHERE $idColumnName = ?";
             }
-            $item[count($keys) + 1] = $idColumnName;
+            $item[count($keys) + 1] = $id;
             $this->query->bindings = array_values($item);
             $outputQuery = $outputQuery . $values;
             return $this->executeQuery($outputQuery, "UPDATE");
