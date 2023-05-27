@@ -250,7 +250,19 @@ class CamelDatabase{
     }
 
     public function update($id, $tableName, $item, $idColumnName = "id"){
-        return $this->checkKeysIfInTable($item, $tableName);
+        if($this->checkKeysIfInTable($item, $tableName)){
+            $outputQuery = "UPDATE `users` SET ";
+            $values = "";
+            $keys = array_keys($item);
+            for($x = 0; $x < count($keys); $x++){
+                if($x < count($keys) - 1) 
+                $values .= "{$keys[$x]} = ?, ";
+                else $values .= "{$keys[$x]} = ? WHERE $idColumnName = ?";
+            }
+            $outputQuery = $outputQuery . $values;
+            return $outputQuery;
+        }
+        else return (array("success" => false, "error" => "Invalid parameters sent!"));
     }
 
     public function filterSearch($filterObject, $tableName){
