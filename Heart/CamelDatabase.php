@@ -209,6 +209,8 @@ class CamelDatabase{
           $response['error'] = $conn->error;
           return $response;
         }
+
+        $affectedRows = $stmt->affected_rows;
         
         if($sqlFunction === "SELECT"){
             $response['success'] = true;
@@ -221,6 +223,16 @@ class CamelDatabase{
         else if($sqlFunction === "INSERT"){
             $response['success'] = true;
             $response['message'] = "Successfully inserted data.";
+        }
+        else if($sqlFunction === "UPDATE"){
+            if($affectedRows > 0){
+                $response['success'] = true;
+                $response['message'] = "Successfully updated $affectedRows row(s) of data.";
+            }
+            else{
+                $response['success'] = false;
+                $response['message'] = "Failed to update data.";
+            }
         }
         else if($sqlFunction === "COUNT"){
             $response['success'] = true;
@@ -259,8 +271,10 @@ class CamelDatabase{
                 $values .= "{$keys[$x]} = ?, ";
                 else $values .= "{$keys[$x]} = ? WHERE $idColumnName = ?";
             }
+            $item[count($keys) + 1] = $idColumnName;
+            $this->query->bindings = array_values($item);
             $outputQuery = $outputQuery . $values;
-            return $outputQuery;
+            return $this->executeQuery($outputQuery, "UPDATE");
         }
         else return (array("success" => false, "error" => "Invalid parameters sent!"));
     }
