@@ -249,6 +249,10 @@ class CamelDatabase{
         return $this->executeQuery($outputQuery, "INSERT");
     }
 
+    public function update($id, $tableName, $item, $idColumnName = "id"){
+        return $this->checkKeysIfInTable($item, $tableName);
+    }
+
     public function filterSearch($filterObject, $tableName){
         $keys = array_keys($filterObject);
         $values = array_values($filterObject);
@@ -306,5 +310,14 @@ class CamelDatabase{
         $decimalPlaces = $number - floor($number);
         if($decimalPlaces > 0) $number = ceil($number);
         return $number;
+    }
+
+    function checkKeysIfInTable($array, $tableName){
+        $tableFields = ($this->returnTableFields($tableName));
+        $array = array_keys($array);
+        foreach($array as $a){
+            if(!isset($tableFields[$a])) return false;
+        }
+        return true;
     }
 }
